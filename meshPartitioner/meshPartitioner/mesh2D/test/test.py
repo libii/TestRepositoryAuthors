@@ -4,9 +4,10 @@ class Test:
 	
 	mesh_list = []
 	
-	def __init__(self, meshTools, name):
+	def __init__(self, meshTools, name, verbose=False):
 		self.meshTools = meshTools
 		self.name = name
+		self.verbose = verbose
 		
 		meshList = os.listdir(".")
 		

@@ -1,8 +1,8 @@
 import os, struct
 
-import meshTools2D
+import mesh2D.meshTools2D as meshTools2D
 
-class MeshPartitioner2D:
+class MeshPartitioner:
 	
 	def __init__(self, meshTools, inputMesh, outputDir, dimensions, pieces):
 		"""
@@ -134,12 +134,12 @@ class MeshPartitioner2D:
 		mesh = []
 		
 		# initialize mesh
-		for dim1 in range(0, self.dimensions[0]):
+		for dim1 in range(0, self.dimensions[self.numDimensions - 1]):
 			dim2s = []
-			for dim2 in range(0, self.dimensions[1]):
+			for dim2 in range(0, self.dimensions[self.numDimensions - 2]):
 				if self.is3D():
 					dim3s = []
-					for dim3 in range(0, self.dimensions[2]):
+					for dim3 in range(0, self.dimensions[self.numDimensions - 3]):
 						dim3s.append(0.0)
 					dim2s.append(dim3s)
 				else:
@@ -201,7 +201,7 @@ if __name__ == "__main__":
 	dimensions = [numX, numY]
 	pieces = [xPieces, yPieces]
 	
-	parter = MeshPartitioner2D(meshTools, "mesh.bin", "partition", dimensions, pieces)
+	parter = MeshPartitioner(meshTools, "mesh.bin", "partition", dimensions, pieces)
 	
 	parter.partition()
 	orig = meshTools.loadMesh(meshFile, dimensions)
