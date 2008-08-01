@@ -1,6 +1,8 @@
 import os, struct
 
 import mesh2D.meshTools2D as meshTools2D
+import mesh3D.meshTools3D as meshTools3D
+from meshToolsAPI import TYPE_FLOAT
 
 class MeshPartitioner:
 	
@@ -99,6 +101,21 @@ class MeshPartitioner:
 	def _extract(self, baseFileName, indices, startCoords, digits):
 		verbose = False
 		
+		printStr = "Index:"
+		
+		for index in indices:
+			printStr = printStr + " " + str(index)
+		
+		printStr = printStr + " Start:"
+		
+		for coord in startCoords:
+			printStr = printStr + " " + str(coord)
+		
+		printStr = printStr + " End:"
+		
+		for i in range(len(startCoords)):
+			printStr = printStr + " " + str(startCoords[i] + self.pieceWidths[i])
+		
 		piece = self.meshTools.extractMeshPeiceFromFile(self.inputMesh, self.dimensions,\
 															startCoords, self.pieceWidths)
 		
@@ -106,7 +123,7 @@ class MeshPartitioner:
 		for index in indices:
 			pieceFile = pieceFile + "_" + self.padNum(index, digits) 
 		
-		print "Writing piece " + pieceFile
+		print "Writing piece " + pieceFile + " " + printStr
 		
 		if verbose:
 			printStr = "Piece"
@@ -181,7 +198,7 @@ class MeshPartitioner:
 			for dim1 in range(0, self.pieceWidths[0]):
 				for dim2 in range(0, self.pieceWidths[1]):
 					if self.is3D():
-						for dim3 in range(0, self.dimensions[2]):
+						for dim3 in range(0, self.pieceWidths[2]):
 							mesh[startCoords[2] + dim3][startCoords[1] + dim2][startCoords[0] + dim1] = piece[dim3][dim2][dim1]
 					else:
 						mesh[startCoords[1] + dim2][startCoords[0] + dim1] = piece[dim2][dim1]
@@ -192,14 +209,16 @@ if __name__ == "__main__":
 	meshFile = "mesh.bin"
 	numX = 4
 	numY = 4
+	numZ = 4
 	
-	xPieces = 2
-	yPieces = 2
+	xPieces = 4
+	yPieces = 4
+	zPieces = 4
 	
-	meshTools = meshTools2D.MeshTools2D(meshTools2D.TYPE_FLOAT, valsPerPoint=5)
+	meshTools = meshTools3D.MeshTools3D(TYPE_FLOAT, valsPerPoint=5)
 	
-	dimensions = [numX, numY]
-	pieces = [xPieces, yPieces]
+	dimensions = [numX, numY, numZ]
+	pieces = [xPieces, yPieces, zPieces]
 	
 	parter = MeshPartitioner(meshTools, "mesh.bin", "partition", dimensions, pieces)
 	

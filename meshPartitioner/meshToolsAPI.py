@@ -49,6 +49,9 @@ class MeshToolsAPI:
 	
 	def compareMeshes(self, mesh1, mesh2):
 		raise MeshException("ERROR: Mesh function not implemented!")
+	
+	def writeTestMesh(self, fileName, widths):
+		raise MeshException("ERROR: Mesh function not implemented!")
 
 class MeshException(Exception):
 	def __init__(self, value):

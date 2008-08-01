@@ -1,6 +1,9 @@
 import struct
 
-from meshPartitioner.meshToolsAPI import *
+try:
+	from meshToolsAPI import *
+except:
+	from meshPartitioner.meshToolsAPI import *
 
 class MeshTools2D(MeshToolsAPI):
 	
@@ -161,3 +164,28 @@ class MeshTools2D(MeshToolsAPI):
 							return False
 		
 		return True
+	
+	def writeTestMesh(self, fileName, widths):
+		maxX = widths[0]
+		maxY = widths[1]
+		
+		fp = open(fileName, "wb")
+		
+		count = 0
+		
+		for y in range(maxY):
+			for x in range(maxX):
+				print str(x) + " " + str(y)
+				vp = float(count)
+				vs = float(x)
+				th = float(y)
+				qp= float(0)
+				qps= float(0)
+				
+				binData=struct.pack("fffff", vp, vs, th, qp, qps)
+				
+				fp.write(binData)
+				
+				count += 1
+		
+		fp.close()
