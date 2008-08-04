@@ -27,6 +27,7 @@ class MeshTools3D(MeshToolsAPI):
 				for x in range(0, numX):
 					binData = file.read(self.bytesPerPoint)
 					point = struct.unpack(self.unpackStr, binData)
+					#print "Read " + str(point) + " from " + meshFile
 					if self.valsPerPoint == 1:
 						point = point[0]
 					yLine.append(point)
@@ -105,7 +106,7 @@ class MeshTools3D(MeshToolsAPI):
 		
 		return mesh
 	
-	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths):
+	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None):
 		"""
 		
 		"""
@@ -139,12 +140,16 @@ class MeshTools3D(MeshToolsAPI):
 		
 		file = open(meshFile, "rb")
 		
-		mesh = []
+		if outFile:
+			out = open(outFile, "wb")
+		else:
+			mesh = []
 		
 		index = 0
 		
 		for z in range(startZ, startZ + widthZ):
-			yList = []
+			if not outFile:
+				yList = []
 			for y in range(startY, startY + widthY):
 				
 				if debug:
@@ -157,16 +162,28 @@ class MeshTools3D(MeshToolsAPI):
 				
 				file.seek(index)
 				
-				xList = []
+				if not outFile:
+					xList = []
 				for x in range(widthX):
 					binData = file.read(self.bytesPerPoint)
-					point = struct.unpack(self.unpackStr, binData)
-					if self.valsPerPoint == 1:
-						point = point[0]
-					xList.append(point)
-				yList.append(xList)
-			mesh.append(yList)
+					if outFile:
+						#print "Writing " + str(point) + " to " + outFile
+						out.write(binData)
+					else:
+						point = struct.unpack(self.unpackStr, binData)
+						if self.valsPerPoint == 1:
+							point = point[0]
+						xList.append(point)
+				if not outFile:
+					yList.append(xList)
+			if not outFile:
+				mesh.append(yList)
 		
+		file.close()
+		
+		if outFile:
+			out.close()
+			return
 		return mesh
 	
 	def compareMeshes(self, mesh1, mesh2):
@@ -251,15 +268,19 @@ if __name__ == "__main__":
 	
 	startCoords = [0, 0, 0]
 	widths = [2,2,2]
-	memPart = tools.extractMeshPeiceFromMemory(mesh, startCoords, widths)
-	filePart = tools.extractMeshPeiceFromFile(meshFile, dims, startCoords, widths)
 	
-	print "\nEXTRACTED MEM\n"
-	tools.printMesh(memPart)
+	pieceFile = "tmp_piece.bin"
 	
-	print "\nEXTRACTED FILE\n"
+	filePart = tools.extractMeshPeiceFromFile(meshFile, dims, startCoords, widths, outFile=pieceFile)
+	
+	piece = tools.loadMesh(pieceFile, widths)
+	
+	print "\nEXTRACTED TO MEM\n"
 	tools.printMesh(filePart)
-	if tools.compareMeshes(memPart, filePart):
+	
+	print "\nEXTRACTED TO FILE\n"
+	tools.printMesh(piece)
+	if tools.compareMeshes(filePart, piece):
 		print "They match!"
 	else:
 		print "They don't match!!"

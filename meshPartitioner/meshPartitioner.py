@@ -63,7 +63,7 @@ class MeshPartitioner:
 		
 		return numStr
 	
-	def partition(self):
+	def partition(self, startIndices=[0,0,0]):
 		fileNameSplit = self.inputMesh.split(os.sep)
 		baseFileName = fileNameSplit[len(fileNameSplit)-1]
 		
@@ -73,12 +73,12 @@ class MeshPartitioner:
 			if length > digits:
 				digits = length
 		
-		for index1 in range(0, self.pieces[0]):
+		for index1 in range(startIndices[0], self.pieces[0]):
 			coord1 = self.pieceWidths[0] * index1
-			for index2 in range(0, self.pieces[1]):
+			for index2 in range(startIndices[1], self.pieces[1]):
 				coord2 = self.pieceWidths[1] * index2
 				if self.numDimensions == 3:
-					for index3 in range(0, self.pieces[2]):
+					for index3 in range(startIndices[2], self.pieces[2]):
 						coord3 = self.pieceWidths[2] * index3
 						indices = []
 						indices.append(index1)
@@ -116,30 +116,14 @@ class MeshPartitioner:
 		for i in range(len(startCoords)):
 			printStr = printStr + " " + str(startCoords[i] + self.pieceWidths[i])
 		
-		piece = self.meshTools.extractMeshPeiceFromFile(self.inputMesh, self.dimensions,\
-															startCoords, self.pieceWidths)
-		
 		pieceFile = self.outputDir + baseFileName
 		for index in indices:
 			pieceFile = pieceFile + "_" + self.padNum(index, digits) 
 		
 		print "Writing piece " + pieceFile + " " + printStr
 		
-		if verbose:
-			printStr = "Piece"
-			
-			for index in indices:
-				printStr = printStr + " " + str(index)
-			
-			printStr = printStr + " =>"
-			
-			for coord in startCoords:
-				printStr = printStr + " " + str(coord)
-			
-			print printStr
-			self.meshTools.printMesh(piece)
-		
-		self.meshTools.writeMesh(piece, pieceFile)
+		piece = self.meshTools.extractMeshPeiceFromFile(self.inputMesh, self.dimensions,\
+															startCoords, self.pieceWidths, outFile=pieceFile)
 	
 	def is3D(self):
 		if self.numDimensions == 3:
