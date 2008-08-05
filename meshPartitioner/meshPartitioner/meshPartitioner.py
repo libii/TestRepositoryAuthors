@@ -3,12 +3,13 @@ import os, sys, struct, math
 import mesh2D.meshTools2D as meshTools2D
 import mesh3D.meshTools3D as meshTools3D
 from meshToolsAPI import TYPE_FLOAT
+from util.pieceUtils import PieceNameGenerator
 
 yifengFileNames = True
 
 class MeshPartitioner:
 	
-	def __init__(self, meshTools, inputMesh, outputDir, dimensions, pieces):
+	def __init__(self, meshTools, inputMesh, outputDir, dimensions, pieces, fileNamePattern):
 		"""
 		"""
 		self.meshTools = meshTools
@@ -56,14 +57,11 @@ class MeshPartitioner:
 		
 		if not outputDir.endswith(os.sep):
 			self.outputDir = self.outputDir + os.sep
-	
-	def padNum(self, num, digits):
-		numStr = str(num)
 		
-		while len(numStr) < digits:
-			numStr = "0" + numStr
+		fileNameSplit = self.inputMesh.split(os.sep)
+		baseFileName = fileNameSplit[len(fileNameSplit)-1]
 		
-		return numStr
+		self.nameGen = PieceNameGenerator(baseFileName, fileNamePattern, self.dimensions, self.pieces, self.pieceWidths)
 	
 	def partition(self, startIndices=None, endIndices=None):
 		verbose=True
@@ -90,9 +88,6 @@ class MeshPartitioner:
 			for piece in self.pieces:
 				endIndices.append(piece - 1)
 		
-		fileNameSplit = self.inputMesh.split(os.sep)
-		baseFileName = fileNameSplit[len(fileNameSplit)-1]
-		
 		digits = 0
 		if yifengFileNames:
 			num = 1
@@ -104,8 +99,6 @@ class MeshPartitioner:
 				length = len(str(num))
 				if length > digits:
 					digits = length
-		
-		index = 0
 		
 		for index1 in range(startIndices[0], endIndices[0]+1):
 			coord1 = self.pieceWidths[0] * index1
@@ -122,8 +115,7 @@ class MeshPartitioner:
 						startCoords.append(coord1)
 						startCoords.append(coord2)
 						startCoords.append(coord3)
-						self._extract(baseFileName, indices, startCoords, digits, index, verbose)
-						index += 1
+						self._extract(indices, startCoords, digits, verbose)
 				else:
 					indices = []
 					indices.append(index1)
@@ -131,18 +123,19 @@ class MeshPartitioner:
 					startCoords = []
 					startCoords.append(coord1)
 					startCoords.append(coord2)
-					self._extract(baseFileName, indices, startCoords, digits, index, verbose)
-					index += 1
+					self._extract(indices, startCoords, digits, verbose)
 	
-	def _extract(self, baseFileName, indices, startCoords, digits, index=0, verbose=False):
+	def _extract(self, indices, startCoords, digits, verbose=False):
 		
-		if yifengFileNames:
-			pieceFile = self.outputDir + baseFileName.rstrip(".bin")
-			pieceFile += self.padNum(index, digits) + ".bin"
-		else:
-			pieceFile = self.outputDir + baseFileName
-			for index in indices:
-				pieceFile = pieceFile + "_" + self.padNum(index, digits) 
+		pieceFile = self.outputDir + self.nameGen.getFileName(indices)
+		
+		#if yifengFileNames:
+		#	pieceFile = self.outputDir + baseFileName.rstrip(".bin")
+		#	pieceFile += self.padNum(index, digits) + ".bin"
+		#else:
+		#	pieceFile = self.outputDir + baseFileName
+		#	for index in indices:
+		#		pieceFile = pieceFile + "_" + self.padNum(index, digits) 
 		
 		if verbose:
 			printStr = "Index:"

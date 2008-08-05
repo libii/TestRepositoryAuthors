@@ -10,6 +10,7 @@ INPUT_MESH_ATTRIBUTE_NAME = "imputMesh"
 VALS_PER_POINT_ATTRIBUTE_NAME = "valuesPerPoint"
 DATA_TYPE_ATTRIBUTE_NAME = "dataType"
 OUTPUT_DIR_ATTRIBUTE_NAME = "outputDir"
+OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME = "outputFilePattern"
 
 class ConfLoader:
 	
@@ -49,6 +50,9 @@ class ConfLoader:
 	
 	def getConfFileName(self):
 		return self.confFile
+	
+	def getFileNamePattern(self):
+		return self.root.getAttribute(OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME)
 	
 	def printConfiguration(self):
 		print "Mesh Partitioner Configuration"

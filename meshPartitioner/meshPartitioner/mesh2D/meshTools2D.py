@@ -218,7 +218,7 @@ class MeshTools2D(MeshToolsAPI):
 		
 		for y in range(maxY):
 			for x in range(maxX):
-				print str(x) + " " + str(y)
+				#print str(x) + " " + str(y)
 				vp = float(count)
 				vs = float(x)
 				th = float(y)
