@@ -41,6 +41,8 @@ elif len(dims) == 3:
 	from meshPartitioner.mesh3D.meshTools3D import MeshTools3D as MeshTools
 else:
 	print str(len(dims)) + "D meshes are not supported!"
+	parser.print_usage()
+	sys.exit(1)
 
 meshFile = os.path.abspath(meshFile)
 meshTools = MeshTools(dataType, valsPerPoint)

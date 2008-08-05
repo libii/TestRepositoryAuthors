@@ -63,7 +63,7 @@ if isAbsolute:
 			startIndexes.append(int(args[i]))
 		for i in range(numDims, numDims*2):
 			width = int(args[i]) - startIndexes[i - numDims]
-			widths.append(width)
+			widths.append(width + 1)
 	else:
 		parser.print_usage()
 		sys.exit(1)
@@ -91,7 +91,7 @@ pieceStr += " to:"
 for i in range(0, len(startIndexes)):
 	start = startIndexes[i]
 	width = widths[i]
-	pieceStr += " " + str(start + width)
+	pieceStr += " " + str(start + width - 1)
 
 if outFile:
 	print "Writing " + pieceStr + " to " + outFile
