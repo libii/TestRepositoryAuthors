@@ -1,8 +1,10 @@
-import os, struct
+import os, sys, struct, math
 
 import mesh2D.meshTools2D as meshTools2D
 import mesh3D.meshTools3D as meshTools3D
 from meshToolsAPI import TYPE_FLOAT
+
+yifengFileNames = True
 
 class MeshPartitioner:
 	
@@ -63,22 +65,52 @@ class MeshPartitioner:
 		
 		return numStr
 	
-	def partition(self, startIndices=[0,0,0]):
+	def partition(self, startIndices=None, endIndices=None):
+		verbose=True
+		
+		if startIndices:
+			for i in range(len(startIndices)):
+				index = startIndices[i]
+				pieces = self.pieces[i]
+				if index >= pieces:
+					sys.stderr.write("ERROR: Start partition index out of bounds!\n")
+					return
+		else:
+			startIndices = [0, 0, 0]
+		
+		if endIndices:
+			for i in range(len(endIndices)):
+				index = endIndices[i]
+				pieces = self.pieces[i]
+				if index >= pieces:
+					sys.stderr.write("Warning: End partition index out of bounds...set to max.\n")
+					endIndices[i] = pieces - 1 
+		else:
+			endIndices = []
+			for piece in self.pieces:
+				endIndices.append(piece - 1)
+		
 		fileNameSplit = self.inputMesh.split(os.sep)
 		baseFileName = fileNameSplit[len(fileNameSplit)-1]
 		
 		digits = 0
-		for num in self.pieces:
-			length = len(str(num))
-			if length > digits:
-				digits = length
+		if yifengFileNames:
+			pieces = []
+			for piece in self.pieces:
+				pieces.append(piece - 1)
+			digits = len(str(self._getIndex(pieces)))
+		else:
+			for num in self.pieces:
+				length = len(str(num))
+				if length > digits:
+					digits = length
 		
-		for index1 in range(startIndices[0], self.pieces[0]):
+		for index1 in range(startIndices[0], endIndices[0]+1):
 			coord1 = self.pieceWidths[0] * index1
-			for index2 in range(startIndices[1], self.pieces[1]):
+			for index2 in range(startIndices[1], endIndices[1]+1):
 				coord2 = self.pieceWidths[1] * index2
 				if self.numDimensions == 3:
-					for index3 in range(startIndices[2], self.pieces[2]):
+					for index3 in range(startIndices[2], endIndices[2]+1):
 						coord3 = self.pieceWidths[2] * index3
 						indices = []
 						indices.append(index1)
@@ -88,7 +120,7 @@ class MeshPartitioner:
 						startCoords.append(coord1)
 						startCoords.append(coord2)
 						startCoords.append(coord3)
-						self._extract(baseFileName, indices, startCoords, digits)
+						self._extract(baseFileName, indices, startCoords, digits, verbose)
 				else:
 					indices = []
 					indices.append(index1)
@@ -96,31 +128,42 @@ class MeshPartitioner:
 					startCoords = []
 					startCoords.append(coord1)
 					startCoords.append(coord2)
-					self._extract(baseFileName, indices, startCoords, digits)
+					self._extract(baseFileName, indices, startCoords, digits, verbose)
 	
-	def _extract(self, baseFileName, indices, startCoords, digits):
-		verbose = False
+	def _getIndex(self, indexes):
+		num = 0
+		for i in range(0, self.numDimensions):
+			num += indexes[i] * math.pow(2, i)
+		return int(num)
+	
+	def _extract(self, baseFileName, indices, startCoords, digits, verbose=False):
 		
-		printStr = "Index:"
+		if yifengFileNames:
+			pieceFile = self.outputDir + baseFileName.rstrip(".bin")
+			index = self._getIndex(indices)
+			pieceFile += self.padNum(index, digits) + ".bin"
+		else:
+			pieceFile = self.outputDir + baseFileName
+			for index in indices:
+				pieceFile = pieceFile + "_" + self.padNum(index, digits) 
 		
-		for index in indices:
-			printStr = printStr + " " + str(index)
-		
-		printStr = printStr + " Start:"
-		
-		for coord in startCoords:
-			printStr = printStr + " " + str(coord)
-		
-		printStr = printStr + " End:"
-		
-		for i in range(len(startCoords)):
-			printStr = printStr + " " + str(startCoords[i] + self.pieceWidths[i])
-		
-		pieceFile = self.outputDir + baseFileName
-		for index in indices:
-			pieceFile = pieceFile + "_" + self.padNum(index, digits) 
-		
-		print "Writing piece " + pieceFile + " " + printStr
+		if verbose:
+			printStr = "Index:"
+			
+			for index in indices:
+				printStr = printStr + " " + str(index)
+			
+			printStr = printStr + " Start:"
+			
+			for coord in startCoords:
+				printStr = printStr + " " + str(coord)
+			
+			printStr = printStr + " End:"
+			
+			for i in range(len(startCoords)):
+				printStr = printStr + " " + str(startCoords[i] + self.pieceWidths[i])
+			
+			print "Writing piece " + pieceFile + " " + printStr
 		
 		piece = self.meshTools.extractMeshPeiceFromFile(self.inputMesh, self.dimensions,\
 															startCoords, self.pieceWidths, outFile=pieceFile)

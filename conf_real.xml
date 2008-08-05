@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <GridPartitionerConfiguration dataType="f" imputMesh="/scratch/00392/yfcui/Shakeout/so2.1-ds-6k/mesh100m.out.bigend.q50" outputDir="" valuesPerPoint="5">
+     <InputMeshDimensions x="6000" y="3000" z="800"/>
+     <Partitions x="40" y="40" z="20"/>
+    </GridPartitionerConfiguration>
