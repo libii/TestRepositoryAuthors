@@ -63,7 +63,7 @@ class MeshPartitioner:
 		
 		self.nameGen = PieceNameGenerator(baseFileName, fileNamePattern, self.dimensions, self.pieces, self.pieceWidths)
 	
-	def partition(self, startIndices=None, endIndices=None):
+	def partition(self, absStart=None, absEnd=None, startIndices=None, endIndices=None):
 		verbose=True
 		
 		if startIndices:
@@ -75,6 +75,14 @@ class MeshPartitioner:
 					return
 		else:
 			startIndices = [0, 0, 0]
+		
+		if not absStart:
+			absStart = 0
+		
+		if not absEnd:
+			absEnd = 1
+			for piece in self.pieces:
+				absEnd *= piece
 		
 		if endIndices:
 			for i in range(len(endIndices)):
@@ -100,12 +108,23 @@ class MeshPartitioner:
 				if length > digits:
 					digits = length
 		
+		count = int(0)
+		absStart = int(absStart)
+		absEnd = int(absEnd)
+		
 		for index1 in range(startIndices[0], endIndices[0]+1):
 			coord1 = self.pieceWidths[0] * index1
 			for index2 in range(startIndices[1], endIndices[1]+1):
 				coord2 = self.pieceWidths[1] * index2
 				if self.numDimensions == 3:
 					for index3 in range(startIndices[2], endIndices[2]+1):
+						
+						if absStart > count:
+							count += 1
+							continue
+						if count > absEnd:
+							return
+						
 						coord3 = self.pieceWidths[2] * index3
 						indices = []
 						indices.append(index1)
@@ -116,7 +135,15 @@ class MeshPartitioner:
 						startCoords.append(coord2)
 						startCoords.append(coord3)
 						self._extract(indices, startCoords, digits, verbose)
+						count += 1
 				else:
+					
+					if absStart > count:
+						count += 1
+						continue
+					if count > absEnd:
+						return
+					
 					indices = []
 					indices.append(index1)
 					indices.append(index2)
@@ -124,6 +151,7 @@ class MeshPartitioner:
 					startCoords.append(coord1)
 					startCoords.append(coord2)
 					self._extract(indices, startCoords, digits, verbose)
+					count += 1
 	
 	def _extract(self, indices, startCoords, digits, verbose=False):
 		

@@ -12,8 +12,8 @@ confFileName = confLoader.DEFAULT_CONF_FILE_NAME
 
 # the input mesh
 #inputMesh = "/scratch/00392/yfcui/Shakeout/so2.1-ds-6k/mesh100m.out.bigend.q50"
-inputMesh = "/gpfs-wan/projects/SCEC/cvm/mesh100m.out.bigend.q50"
-#inputMesh = "mesh_16_16_16.bin"
+#inputMesh = "/gpfs-wan/projects/SCEC/cvm/mesh100m.out.bigend.q50"
+inputMesh = "mesh_4_4_4.bin"
 
 # output dir. if blank, the directory name will be: meshName_xPieces_yPieces_zPieces (in the current directory)
 outputDir = ""
@@ -21,8 +21,8 @@ outputDir = ""
 # the number of values per data point
 valuesPerPoint = 5
 
-fileNamePattern = "media%I.bin"
-#fileNamePattern = "mesh_%X_%Y_%Z.bin"
+#fileNamePattern = "media%I.bin"
+fileNamePattern = "mesh_%X_%Y_%Z.bin"
 
 # type of numbers for each value:
 # f = float
@@ -36,21 +36,21 @@ fileNamePattern = "media%I.bin"
 dataType = "f"
 
 # the size of the input mesh
-meshSizeX = 6000
-meshSizeY = 3000
-meshSizeZ = 800
-#meshSizeX = 4
-#meshSizeY = 4
-#meshSizeZ = 4
+#meshSizeX = 6000
+#meshSizeY = 3000
+#meshSizeZ = 800
+meshSizeX = 4
+meshSizeY = 4
+meshSizeZ = 4
 
 # number of partitions in each dimension. this must be evenly divisible by the
 # size of that dimension
-partitionsX = 40
-partitionsY = 40
-partitionsZ = 10
-#partitionsX = 2
-#partitionsY = 2
-#partitionsZ = 2
+#partitionsX = 40
+#partitionsY = 40
+#partitionsZ = 10
+partitionsX = 2
+partitionsY = 2
+partitionsZ = 2
 
 # ============ Write to File ============
 

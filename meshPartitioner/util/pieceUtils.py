@@ -71,7 +71,6 @@ class PieceNameGenerator:
 		for index in dimensions:
 			maxIndex.append(index - 1)
 		self.realIndexDigits = len(str(self.calcIndexes(maxIndex, dimensions)))
-		print "REAL INDEX DIGITS: " + str(self.realIndexDigits)
 	
 	def getFileName(self, indexes):
 		fileName = self.pattern
