@@ -246,8 +246,8 @@ class MeshTools3D(MeshToolsAPI):
 		for z in range(maxZ):
 			for y in range(maxY):
 				for x in range(maxX):
-					if count % mod == 0:
-						print str(x) + " " + str(y) + " " + str(z)
+					#if count % mod == 0:
+						#print str(x) + " " + str(y) + " " + str(z)
 					vp = float(count)
 					vs = float(x)
 					th = float(y)
