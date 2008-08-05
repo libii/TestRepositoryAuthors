@@ -95,15 +95,17 @@ class MeshPartitioner:
 		
 		digits = 0
 		if yifengFileNames:
-			pieces = []
+			num = 1
 			for piece in self.pieces:
-				pieces.append(piece - 1)
-			digits = len(str(self._getIndex(pieces)))
+				num *= piece
+			digits = len(str(piece - 1))
 		else:
 			for num in self.pieces:
 				length = len(str(num))
 				if length > digits:
 					digits = length
+		
+		index = 0
 		
 		for index1 in range(startIndices[0], endIndices[0]+1):
 			coord1 = self.pieceWidths[0] * index1
@@ -120,7 +122,8 @@ class MeshPartitioner:
 						startCoords.append(coord1)
 						startCoords.append(coord2)
 						startCoords.append(coord3)
-						self._extract(baseFileName, indices, startCoords, digits, verbose)
+						self._extract(baseFileName, indices, startCoords, digits, index, verbose)
+						index += 1
 				else:
 					indices = []
 					indices.append(index1)
@@ -128,19 +131,13 @@ class MeshPartitioner:
 					startCoords = []
 					startCoords.append(coord1)
 					startCoords.append(coord2)
-					self._extract(baseFileName, indices, startCoords, digits, verbose)
+					self._extract(baseFileName, indices, startCoords, digits, index, verbose)
+					index += 1
 	
-	def _getIndex(self, indexes):
-		num = 0
-		for i in range(0, self.numDimensions):
-			num += indexes[i] * math.pow(2, i)
-		return int(num)
-	
-	def _extract(self, baseFileName, indices, startCoords, digits, verbose=False):
+	def _extract(self, baseFileName, indices, startCoords, digits, index=0, verbose=False):
 		
 		if yifengFileNames:
 			pieceFile = self.outputDir + baseFileName.rstrip(".bin")
-			index = self._getIndex(indices)
 			pieceFile += self.padNum(index, digits) + ".bin"
 		else:
 			pieceFile = self.outputDir + baseFileName
