@@ -55,7 +55,7 @@ elif numDims == 3:
 
 meshTools = MeshTools(conf.getDataType(), conf.getValuesPerPoint())
 
-partitioner = meshPartitioner.MeshPartitioner(meshTools, meshFile, outputDir, dims, pieces)
+partitioner = meshPartitioner.MeshPartitioner(meshTools, meshFile, outputDir, dims, pieces, conf.getFileNamePattern())
 
 startIndexes = None
 endIndexes = None
