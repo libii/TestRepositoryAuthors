@@ -35,7 +35,7 @@ class MeshToolsAPI:
 	def loadMesh(self, meshFile, dimensions):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
-	def printMesh(self, mesh, indexToPrint=None):
+	def printMesh(self, mesh, indexToPrint=None, warn=True):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
 	def writeMesh(self, mesh, fileName):
@@ -44,7 +44,7 @@ class MeshToolsAPI:
 	def extractMeshPeiceFromMemory(self, origMesh, startCoords, widths):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
-	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths):
+	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
 	def compareMeshes(self, mesh1, mesh2):
@@ -52,6 +52,25 @@ class MeshToolsAPI:
 	
 	def writeTestMesh(self, fileName, widths):
 		raise MeshException("ERROR: Mesh function not implemented!")
+	
+	def isAnyDimLengthGreaterThan(self, dims, val):
+		for dim in dims:
+			if dim > val:
+				return True
+		return False
+	
+	def checkPrintWarn(self, dims):
+		val = 10
+		if self.isAnyDimLengthGreaterThan(dims, val):
+			response = ""
+			while not (response.startswith("y") or response.startswith("n")):
+				print "WARNING: You are trying to print a very large mesh: " + str(dims)
+				response = raw_input("Print anyways? (y/n) ").lower()
+			if response.startswith("n"):
+				return False
+		return True
+			
+		
 
 class MeshException(Exception):
 	def __init__(self, value):

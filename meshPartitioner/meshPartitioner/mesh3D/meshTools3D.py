@@ -1,4 +1,4 @@
-import struct
+import struct, sys
 
 try:
 	from meshToolsAPI import *
@@ -26,6 +26,7 @@ class MeshTools3D(MeshToolsAPI):
 				yLine = []
 				for x in range(0, numX):
 					binData = file.read(self.bytesPerPoint)
+					#print "LENGTH: " + str(len(binData))
 					point = struct.unpack(self.unpackStr, binData)
 					#print "Read " + str(point) + " from " + meshFile
 					if self.valsPerPoint == 1:
@@ -38,7 +39,7 @@ class MeshTools3D(MeshToolsAPI):
 		
 		return mesh
 	
-	def printMesh(self, mesh, indexToPrint=None):
+	def printMesh(self, mesh, indexToPrint=None, warn=True):
 		"""
 		Prints a string representation of the given mesh
 		"""
@@ -46,6 +47,9 @@ class MeshTools3D(MeshToolsAPI):
 		numZ = len(mesh)
 		numY = len(mesh[0])
 		numX = len(mesh[0][0])
+		
+		if not self.checkPrintWarn([numX, numY, numZ]):
+			return
 		
 		for y in reversed(range(0, numY)):
 			for z in reversed(range(0, numZ)):
@@ -260,8 +264,15 @@ class MeshTools3D(MeshToolsAPI):
 
 if __name__ == "__main__":
 	tools = MeshTools3D(TYPE_FLOAT, 5)
+	
 	meshFile = "mesh.bin"
 	dims = [4, 4, 4]
+	
+	mesh = tools.loadMesh("/home/kevin/workspace_python/meshPartitioner/mesh_4_4_4.bin", dims)
+	tools.printMesh(mesh)
+	
+	sys.exit(0)
+	
 	mesh = tools.loadMesh(meshFile, dims)
 	print "\nORIG\n"
 	tools.printMesh(mesh)

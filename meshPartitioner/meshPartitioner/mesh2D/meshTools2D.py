@@ -37,6 +37,12 @@ class MeshTools2D(MeshToolsAPI):
 		"""
 		Prints a string representation of the given mesh
 		"""
+		
+		numY = len(mesh)
+		numX = len(mesh[0])
+		if not self.checkPrintWarn([numX, numY]):
+			return
+		
 		for xList in reversed(mesh):
 			printStr = ""
 			for x in xList:
@@ -86,7 +92,7 @@ class MeshTools2D(MeshToolsAPI):
 		
 		return mesh
 	
-	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths):
+	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None):
 		"""
 		
 		"""
@@ -110,7 +116,10 @@ class MeshTools2D(MeshToolsAPI):
 		
 		file = open(meshFile, "rb")
 		
-		mesh = []
+		if outFile:
+			out = open(outFile, "wb")
+		else:
+			mesh = []
 		
 		index = 0
 		
@@ -126,15 +135,24 @@ class MeshTools2D(MeshToolsAPI):
 			
 			file.seek(index)
 			
-			xList = []
+			if not outFile:
+				xList = []
 			for x in range(widthX):
 				binData = file.read(self.bytesPerPoint)
-				point = struct.unpack(self.unpackStr, binData)
-				if self.valsPerPoint == 1:
-					point = point[0]
-				xList.append(point)
-			mesh.append(xList)
+				if outFile:
+					#print "Writing " + str(point) + " to " + outFile
+					out.write(binData)
+				else:
+					point = struct.unpack(self.unpackStr, binData)
+					if self.valsPerPoint == 1:
+						point = point[0]
+					xList.append(point)
+			if not outFile:
+				mesh.append(xList)
 		
+		if outFile:
+			out.close()
+			return
 		return mesh
 	
 	def compareMeshes(self, mesh1, mesh2):
@@ -164,6 +182,31 @@ class MeshTools2D(MeshToolsAPI):
 							return False
 		
 		return True
+	
+	def writeTestMeshFastYX(self, fileName, widths):
+		maxX = widths[0]
+		maxY = widths[1]
+		
+		fp = open(fileName, "wb")
+		
+		count = 0
+		
+		for y in range(maxY):
+			for x in range(maxX):
+				print str(x) + " " + str(y)
+				vp = float(count)
+				vs = float(x)
+				th = float(y)
+				qp= float(0)
+				qps= float(0)
+				
+				binData=struct.pack("fffff", vp, vs, th, qp, qps)
+				
+				fp.write(binData)
+				
+				count += 1
+		
+		fp.close()
 	
 	def writeTestMesh(self, fileName, widths):
 		maxX = widths[0]
