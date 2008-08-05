@@ -1,4 +1,4 @@
-import xml.dom.minidom
+import os, xml.dom.minidom
 
 DEFAULT_CONF_FILE_NAME = "conf.xml"
 
@@ -49,7 +49,7 @@ class ConfLoader:
 		return self.root.getAttribute(OUTPUT_DIR_ATTRIBUTE_NAME)
 	
 	def getConfFileName(self):
-		return self.confFile
+		return os.path.abspath(self.confFile)
 	
 	def getFileNamePattern(self):
 		return self.root.getAttribute(OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME)
