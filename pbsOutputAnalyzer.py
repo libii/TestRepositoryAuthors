@@ -49,12 +49,12 @@ firstStartTime = 3000000000
 lastEndTime = 0
 
 for fileName in dirList:
+	file = dir + fileName
+	
 	if os.path.isdir(file):
 		continue
 	if not file.endswith(".out"):
 		continue
-	
-	file = dir + fileName
 	
 	fp = open(file, "r")
 	
