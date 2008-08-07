@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-    <GridPartitionerConfiguration dataType="f" imputMesh="/gpfs-wan/projects/SCEC/cvm/mesh100m.out.bigend.q50" outputDir="" outputFilePattern="media%I.bin" valuesPerPoint="5">
-     <InputMeshDimensions x="6000" y="3000" z="800"/>
-     <Partitions x="40" y="40" z="10"/>
-    </GridPartitionerConfiguration>

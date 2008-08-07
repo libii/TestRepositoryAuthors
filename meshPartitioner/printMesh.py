@@ -10,6 +10,8 @@ parser = OptionParser()
 
 parser.add_option("-c", "--conf", dest="conf_file", default=confLoader.DEFAULT_CONF_FILE_NAME, type="string",
 			  help="Configuration File (default = %default)")
+parser.add_option("-v", "--vals-per-point", dest="vals_per_point", default="", type="string",
+			  help="Values per point (default will use configuration file value")
 
 progName = sys.argv[0]
 usage = progName + ""
@@ -22,7 +24,10 @@ parser.set_usage(usage)
 conf = confLoader.ConfLoader(options.conf_file)
 
 dataType = conf.getDataType()
-valsPerPoint = conf.getValuesPerPoint()
+if options.vals_per_point:
+	valsPerPoint = int(options.vals_per_point)
+else:
+	valsPerPoint = conf.getValuesPerPoint()
 
 dims = []
 
@@ -45,7 +50,7 @@ else:
 	sys.exit(1)
 
 meshFile = os.path.abspath(meshFile)
-meshTools = MeshTools(dataType, valsPerPoint)
+meshTools = MeshTools(dataType, conf.getInputEndianness(), conf.getOutputEndianness(), valsPerPoint, conf.getValuesToInclude())
 print "Mesh: " + meshFile + " " + str(dims) + " (" + str(conf.getValuesPerPoint()) + " Values Per Point)"
 
 mesh = meshTools.loadMesh(meshFile, dims)

@@ -1,3 +1,5 @@
+import struct
+
 # INTEGERS
 TYPE_UNSIGNED_SHORT	 	= "H"	# 2 bytes
 TYPE_SHORT 				= "h"	# 2 bytes
@@ -12,10 +14,13 @@ TYPE_DOUBLE 			= "d"	# 8 bytes
 
 class MeshToolsAPI:
 	
-	def __init__(self, type, valsPerPoint=1):
+	def __init__(self, type, inputEndianness="=", outputEndianness="=", valsPerPoint=1, valsToInclude=None):
 		
 		self.type = type
+		self.inputEndianness = inputEndianness
+		self.outputEndianness = outputEndianness
 		self.valsPerPoint = valsPerPoint
+		self.valsToInclude = valsToInclude
 		
 		# detect the type
 		if type in (TYPE_UNSIGNED_SHORT, TYPE_SHORT):
@@ -28,9 +33,16 @@ class MeshToolsAPI:
 			raise CustomException("Binary number type '" + type + "' is unknown or unsupported!")
 		
 		self.bytesPerPoint = self.bytesPerNum * self.valsPerPoint
-		self.unpackStr = ""
+		unpackStr = ""
 		for i in range(0, self.valsPerPoint):
-			self.unpackStr = self.unpackStr + self.type
+			unpackStr += self.type
+		self.inUnpackStr = inputEndianness + unpackStr
+		if not self.valsToInclude:
+			self.outUnpackStr = outputEndianness + unpackStr
+		else:
+			self.outUnpackStr = self.outputEndianness
+			for i in range(0, len(self.valsToInclude)):
+				unpackStr += self.type
 	
 	def loadMesh(self, meshFile, dimensions):
 		raise MeshException("ERROR: Mesh function not implemented!")
@@ -69,8 +81,27 @@ class MeshToolsAPI:
 			if response.startswith("n"):
 				return False
 		return True
-			
+	
+	def restructureVals(self, vals):
+		if not self.valsToInclude:
+			return vals
+		newVals = []
 		
+		for index in self.valsToInclude:
+			index -= 1
+			newVals.append(vals[index])
+		
+		return newVals
+	
+	def packList(self, fmt, list):
+		binData = ""
+		for val in list:
+			binData += struct.pack(fmt, val)
+		
+		return binData
+	
+	def isFloatingType(self):
+		return self.type == TYPE_FLOAT or self.type == TYPE_DOUBLE
 
 class MeshException(Exception):
 	def __init__(self, value):

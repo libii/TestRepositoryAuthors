@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <GridPartitionerConfiguration dataType="f" imputMesh="mesh_4_4_4.bin" outputDir="" outputFilePattern="mesh_%X_%Y_%Z.bin" valuesPerPoint="5">
+    <GridPartitionerConfiguration dataType="f" imputMesh="mesh_4_4_4.bin" inputEndianness="l" outputDir="" outputEndianness="l" outputFilePattern="mesh_%X_%Y_%Z.bin" valuesPerPoint="5" valuesToInclude="1,2,3,4,5">
      <InputMeshDimensions x="4" y="4" z="4"/>
      <Partitions x="2" y="2" z="2"/>
     </GridPartitionerConfiguration>

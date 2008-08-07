@@ -60,7 +60,7 @@ elif numDims == 3:
 	# 3D
 	from meshPartitioner.mesh3D.meshTools3D import MeshTools3D as MeshTools
 
-meshTools = MeshTools(conf.getDataType(), conf.getValuesPerPoint())
+meshTools = MeshTools(dataType, conf.getInputEndianness(), conf.getOutputEndianness(), conf.getValuesPerPoint(), conf.getValuesToInclude())
 
 partitioner = meshPartitioner.MeshPartitioner(meshTools, meshFile, outputDir, dims, pieces, conf.getFileNamePattern())
 
