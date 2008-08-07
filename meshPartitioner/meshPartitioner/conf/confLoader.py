@@ -59,19 +59,19 @@ class ConfLoader:
 	
 	def getInputEndianness(self):
 		try:
-			return self._evalEndianness(self.root.getAttribute(INPUT_ENDIANNESS_ATT_NAME))
+			return self.evalEndianness(self.root.getAttribute(INPUT_ENDIANNESS_ATT_NAME))
 		except:
 			sys.stderr.write("WARNING: Input Endianness not specified, using native\n")
 			return "="
 	
 	def getOutputEndianness(self):
 		try:
-			return self._evalEndianness(self.root.getAttribute(OUTPUT_ENDIANNESS_ATT_NAME))
+			return self.evalEndianness(self.root.getAttribute(OUTPUT_ENDIANNESS_ATT_NAME))
 		except:
 			sys.stderr.write("WARNING: Output Endianness not specified, using native\n")
 			return "="
 	
-	def _evalEndianness(self, end):
+	def evalEndianness(self, end):
 		end = str(end)
 		end = end.lower()
 		end = end.strip()
