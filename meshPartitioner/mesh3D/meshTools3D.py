@@ -7,8 +7,8 @@ except:
 
 class MeshTools3D(MeshToolsAPI):
 	
-	def __init__(self, type, valsPerPoint=1):
-		MeshToolsAPI.__init__(self, type, valsPerPoint)
+	def __init__(self, type, inputEndianness="=", outputEndianness="=", valsPerPoint=1, valsToInclude=None):
+		MeshToolsAPI.__init__(self, type, inputEndianness, outputEndianness, valsPerPoint, valsToInclude)
 	
 	def loadMesh(self, meshFile, dimensions):
 		"""
@@ -27,7 +27,7 @@ class MeshTools3D(MeshToolsAPI):
 				for x in range(0, numX):
 					binData = file.read(self.bytesPerPoint)
 					#print "LENGTH: " + str(len(binData))
-					point = struct.unpack(self.unpackStr, binData)
+					point = struct.unpack(self.inUnpackStr, binData)
 					#print "Read " + str(point) + " from " + meshFile
 					if self.valsPerPoint == 1:
 						point = point[0]
@@ -68,15 +68,17 @@ class MeshTools3D(MeshToolsAPI):
 	def writeMesh(self, mesh, fileName):
 		fp = open(fileName, "wb")
 		
+		fmt = self.outputEndianness + self.type
+		
 		for yList in mesh:
 			for xList in yList:
 				for x in xList:
 					if self.valsPerPoint == 0:
-						binData=struct.pack("f", x)
+						binData=struct.pack(fmt, x)
 					else:
 						binData = ""
 						for val in x:
-							binData= binData + struct.pack("f", val)
+							binData= binData + struct.pack(fmt, val)
 					fp.write(binData)
 		
 		fp.close()
@@ -170,14 +172,20 @@ class MeshTools3D(MeshToolsAPI):
 					xList = []
 				for x in range(widthX):
 					binData = file.read(self.bytesPerPoint)
-					if outFile:
-						#print "Writing " + str(point) + " to " + outFile
+					if outFile and self.valsToInclude == None and self.inputEndianness == self.outputEndianness:
+						# we get to just copy the data
 						out.write(binData)
 					else:
-						point = struct.unpack(self.unpackStr, binData)
+						point = struct.unpack(self.inUnpackStr, binData)
 						if self.valsPerPoint == 1:
 							point = point[0]
-						xList.append(point)
+						else:
+							point = self.restructureVals(point)
+						if outFile:
+							binData = self.packList(self.outputEndianness + self.type, point)
+							out.write(binData)
+						else:
+							xList.append(point)
 				if not outFile:
 					yList.append(xList)
 			if not outFile:
@@ -243,20 +251,42 @@ class MeshTools3D(MeshToolsAPI):
 		else:
 			mod = 1
 		
+		vpp = self.valsPerPoint
+		fmt = self.inputEndianness + self.type
+		
 		for z in range(maxZ):
 			for y in range(maxY):
 				for x in range(maxX):
 					#if count % mod == 0:
-						#print str(x) + " " + str(y) + " " + str(z)
-					vp = float(count)
-					vs = float(x)
-					th = float(y)
-					qp= float(z)
-					qps= float(0)
+					#	print str(x) + " " + str(y) + " " + str(z)
+					vals = []
+					if vpp >= 1:
+						if self.isFloatingType():
+							vals.append(float(count))
+						else:
+							vals.append(count)
+					if vpp >= 2:
+						if self.isFloatingType():
+							vals.append(float(x))
+						else:
+							vals.append(x)
+					if vpp >= 3:
+						if self.isFloatingType():
+							vals.append(float(y))
+						else:
+							vals.append(y)
+					if vpp >= 4:
+						if self.isFloatingType():
+							vals.append(float(z))
+						else:
+							vals.append(z)
+					for i in range(5, vpp+1):
+						if self.isFloatingType():
+							vals.append(float(z))
+						else:
+							vals.append(z)
 					
-					binData=struct.pack("fffff", vp, vs, th, qp, qps)
-					
-					fp.write(binData)
+					fp.write(self.packList(fmt, vals))
 					
 					count += 1
 					

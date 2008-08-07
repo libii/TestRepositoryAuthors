@@ -15,11 +15,22 @@ confFileName = confLoader.DEFAULT_CONF_FILE_NAME
 #inputMesh = "/gpfs-wan/projects/SCEC/cvm/mesh100m.out.bigend.q50"
 inputMesh = "mesh_4_4_4.bin"
 
+# Endianness of the input and output meshes:
+# 'l' for little endian
+# 'b' for big endian
+# 'n' for native
+inputEndianness = "l"
+outputEndianness = "l"
+
 # output dir. if blank, the directory name will be: meshName_xPieces_yPieces_zPieces (in the current directory)
 outputDir = ""
 
 # the number of values per data point
 valuesPerPoint = 5
+
+# the values and order to include in the output mesh, or blank to copy values.
+# values should be comma separated, and range from 1 to ValuesPerPoint.
+valuesToInclude = "1,2,3,4,5"
 
 #fileNamePattern = "media%I.bin"
 fileNamePattern = "mesh_%X_%Y_%Z.bin"
@@ -79,6 +90,9 @@ root.appendChild(partitions)
 
 root.setAttribute(confLoader.INPUT_MESH_ATTRIBUTE_NAME, inputMesh)
 root.setAttribute(confLoader.VALS_PER_POINT_ATTRIBUTE_NAME, str(valuesPerPoint))
+root.setAttribute(confLoader.VALS_TO_INCLUDE_ATT_NAME, str(valuesToInclude))
+root.setAttribute(confLoader.INPUT_ENDIANNESS_ATT_NAME, str(inputEndianness))
+root.setAttribute(confLoader.OUTPUT_ENDIANNESS_ATT_NAME, str(outputEndianness))
 root.setAttribute(confLoader.DATA_TYPE_ATTRIBUTE_NAME, dataType)
 root.setAttribute(confLoader.OUTPUT_DIR_ATTRIBUTE_NAME, outputDir)
 root.setAttribute(confLoader.OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME, fileNamePattern)

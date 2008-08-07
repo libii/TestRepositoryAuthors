@@ -1,4 +1,4 @@
-import os, xml.dom.minidom
+import os, sys, xml.dom.minidom, traceback
 
 DEFAULT_CONF_FILE_NAME = "conf.xml"
 
@@ -11,6 +11,9 @@ VALS_PER_POINT_ATTRIBUTE_NAME = "valuesPerPoint"
 DATA_TYPE_ATTRIBUTE_NAME = "dataType"
 OUTPUT_DIR_ATTRIBUTE_NAME = "outputDir"
 OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME = "outputFilePattern"
+INPUT_ENDIANNESS_ATT_NAME = "inputEndianness"
+OUTPUT_ENDIANNESS_ATT_NAME = "outputEndianness"
+VALS_TO_INCLUDE_ATT_NAME = "valuesToInclude"
 
 class ConfLoader:
 	
@@ -53,6 +56,43 @@ class ConfLoader:
 	
 	def getFileNamePattern(self):
 		return self.root.getAttribute(OUTPUT_FILE_PATTERN_ATTRIBUTE_NAME)
+	
+	def getInputEndianness(self):
+		try:
+			return self._evalEndianness(self.root.getAttribute(INPUT_ENDIANNESS_ATT_NAME))
+		except:
+			sys.stderr.write("WARNING: Input Endianness not specified, using native\n")
+			return "="
+	
+	def getOutputEndianness(self):
+		try:
+			return self._evalEndianness(self.root.getAttribute(OUTPUT_ENDIANNESS_ATT_NAME))
+		except:
+			sys.stderr.write("WARNING: Output Endianness not specified, using native\n")
+			return "="
+	
+	def _evalEndianness(self, end):
+		end = str(end)
+		end = end.lower()
+		end = end.strip()
+		if end.startswith("l"):
+			return "<"
+		if end.startswith("b"):
+			return ">"
+		return "="
+	
+	def getValuesToInclude(self):
+		try:
+			valsToInclude = str(self.root.getAttribute(VALS_TO_INCLUDE_ATT_NAME))
+			valsToInclude = valsToInclude.strip()
+			vals = valsToInclude.split(',')
+			valInts = []
+			for val in vals:
+				valInts.append(int(val))
+			return valInts
+		except:
+			#traceback.print_exception(*sys.exc_info())
+			return None
 	
 	def printConfiguration(self):
 		print "Mesh Partitioner Configuration"

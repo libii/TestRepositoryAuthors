@@ -58,7 +58,7 @@ else:
 	sys.exit(1)
 
 meshFile = os.path.abspath(meshFile)
-meshTools = MeshTools(dataType, valsPerPoint)
+meshTools = MeshTools(dataType, conf.getInputEndianness(), conf.getOutputEndianness(), conf.getValuesPerPoint(), conf.getValuesToInclude())
 print "Generationg Mesh: " + meshFile + " " + str(dims) + " (" + str(conf.getValuesPerPoint()) + " Values Per Point)"
 
 meshTools.writeTestMesh(meshFile, dims)
