@@ -10,6 +10,8 @@ parser = OptionParser()
 
 parser.add_option("-c", "--conf", dest="conf_file", default=confLoader.DEFAULT_CONF_FILE_NAME, type="string",
 			  help="Configuration File (default = %default)")
+parser.add_option("-e", "--endian", dest="endianness", default="", type="string",
+			  help="Endianness of file to print. 'l' for little, 'b' for big, or 'n' for native. Default is loaded from configuration file.")
 parser.add_option("-v", "--vals-per-point", dest="vals_per_point", default="", type="string",
 			  help="Values per point (default will use configuration file value")
 
@@ -50,7 +52,11 @@ else:
 	sys.exit(1)
 
 meshFile = os.path.abspath(meshFile)
-meshTools = MeshTools(dataType, conf.getInputEndianness(), conf.getOutputEndianness(), valsPerPoint, conf.getValuesToInclude())
+if options.endianness:
+	endian = conf.evalEndianness(options.endianness)
+else:
+	endian = conf.getInputEndianness()
+meshTools = MeshTools(dataType, endian, conf.getOutputEndianness(), valsPerPoint, conf.getValuesToInclude())
 print "Mesh: " + meshFile + " " + str(dims) + " (" + str(conf.getValuesPerPoint()) + " Values Per Point)"
 
 mesh = meshTools.loadMesh(meshFile, dims)
