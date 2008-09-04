@@ -14,8 +14,9 @@ parser.add_option("-a", "--auto-name", dest="auto_name", action="store_true", de
 			  help="Auto name the mesh file: mesh_dim1_dim2[_dim3].bin. Default requires a name")
 
 progName = sys.argv[0]
-usage = progName + " MESH_FILE DIM1 DIM2 [DIM3]"
-usage = progName + " -a DIM1 DIM2 [DIM3]"
+usage = progName + " MESH_FILE DIM1 DIM2 [DIM3]\n"
+usage += "\t-- OR --\n"
+usage += "\t" + progName + " -a DIM1 DIM2 [DIM3]"
 
 parser.set_usage(usage)
 

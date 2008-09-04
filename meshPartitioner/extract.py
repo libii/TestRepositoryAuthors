@@ -20,11 +20,12 @@ parser.add_option("-f", "--file", dest="out_file", default="", type="string",
 
 progName = sys.argv[0]
 usage = progName + " PARTITION_INDEXES\n"
-usage = progName + " -a ABSOLUTE_START_INDEXES ABSOLUTE_END_INDEXES\n\n"
-usage = usage + "Example: For a 3D mesh, if you wanted to extract partition index [0, 0, 1]\n"
-usage = usage + "\t" + progName + " 0 0 1\n\n"
-usage = usage + "\tIf you wanted to extract a piece starting at absolute index [0, 0, 1] and ending at absolute index [1, 4, 2]\n"
-usage = usage + "\t" + progName + " -a 0 0 1 1 4 2\n"
+usage += "\t-- OR --\n"
+usage += "\t" + progName + " -a ABSOLUTE_START_INDEXES ABSOLUTE_END_INDEXES\n\n"
+usage += "Example: For a 3D mesh, if you wanted to extract partition index [0, 0, 1]\n"
+usage += "\t" + progName + " 0 0 1\n\n"
+usage += "\tIf you wanted to extract a piece starting at absolute index [0, 0, 1] and ending at absolute index [1, 4, 2]\n"
+usage += "\t" + progName + " -a 0 0 1 1 4 2\n"
 
 parser.set_usage(usage)
 

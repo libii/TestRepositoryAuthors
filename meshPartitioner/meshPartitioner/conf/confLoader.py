@@ -81,11 +81,12 @@ class ConfLoader:
 			return ">"
 		return "="
 	
-	def getValuesToInclude(self):
+	def getValuesToInclude(self, valsStr=None):
+		if valsStr == None:
+			valsStr = str(self.root.getAttribute(VALS_TO_INCLUDE_ATT_NAME))
 		try:
-			valsToInclude = str(self.root.getAttribute(VALS_TO_INCLUDE_ATT_NAME))
-			valsToInclude = valsToInclude.strip()
-			vals = valsToInclude.split(',')
+			valsStr = valsStr.strip()
+			vals = valsStr.split(',')
 			valInts = []
 			for val in vals:
 				valInts.append(int(val))

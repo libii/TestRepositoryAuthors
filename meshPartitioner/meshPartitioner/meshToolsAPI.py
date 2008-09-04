@@ -47,7 +47,7 @@ class MeshToolsAPI:
 	def loadMesh(self, meshFile, dimensions):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
-	def printMesh(self, mesh, indexToPrint=None, warn=True):
+	def printMesh(self, mesh, indexesToPrint=None, warn=True):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
 	def writeMesh(self, mesh, fileName):
@@ -64,6 +64,30 @@ class MeshToolsAPI:
 	
 	def writeTestMesh(self, fileName, widths):
 		raise MeshException("ERROR: Mesh function not implemented!")
+	
+	def extractVals(self, meshFile, dimensions, outFile=None):
+		if not outFile:
+			# we're printint it
+			mesh = self.loadMesh(meshFile, dimensions)
+			self.printMesh(mesh, self.valsToInclude)
+			return
+		inFP = open(meshFile, "rb")
+		outFP = open(outFile, "wb")
+		
+		fmt = self.outputEndianness + self.type
+		
+		binData = inFP.read(self.bytesPerPoint)
+		
+		while len(binData) == self.bytesPerPoint:
+			point = struct.unpack(self.inUnpackStr, binData)
+			point = self.restructureVals(point)
+			outData = self.packList(fmt, point)
+			outFP.write(outData)
+			
+			binData = inFP.read(self.bytesPerPoint)
+		
+		inFP.close()
+		outFP.close()
 	
 	def isAnyDimLengthGreaterThan(self, dims, val):
 		for dim in dims:
@@ -82,12 +106,14 @@ class MeshToolsAPI:
 				return False
 		return True
 	
-	def restructureVals(self, vals):
+	def restructureVals(self, vals, valsToInclude=-1):
+		if valsToInclude == -1:
+			valsToInclude = self.valsToInclude
 		if not self.valsToInclude:
 			return vals
 		newVals = []
 		
-		for index in self.valsToInclude:
+		for index in valsToInclude:
 			index -= 1
 			newVals.append(vals[index])
 		
