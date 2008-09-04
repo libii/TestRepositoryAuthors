@@ -39,7 +39,7 @@ class MeshTools3D(MeshToolsAPI):
 		
 		return mesh
 	
-	def printMesh(self, mesh, indexToPrint=None, warn=True):
+	def printMesh(self, mesh, indexesToPrint=None, warn=True):
 		"""
 		Prints a string representation of the given mesh
 		"""
@@ -58,10 +58,9 @@ class MeshTools3D(MeshToolsAPI):
 					if len(printStr) > 0:
 						printStr = printStr + "\t"
 					point = mesh[z][y][x]
-					if indexToPrint:
-						printStr = printStr + str(point[indexToPrint])
-					else:
-						printStr = printStr + str(point)
+					if indexesToPrint:
+						point = self.restructureVals(point, indexesToPrint)
+					printStr = printStr + str(point)
 				print printStr
 			print
 	

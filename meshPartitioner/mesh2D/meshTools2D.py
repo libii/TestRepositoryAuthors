@@ -33,7 +33,7 @@ class MeshTools2D(MeshToolsAPI):
 		
 		return mesh
 	
-	def printMesh(self, mesh, indexToPrint=None):
+	def printMesh(self, mesh, indexesToPrint=None):
 		"""
 		Prints a string representation of the given mesh
 		"""
@@ -45,13 +45,12 @@ class MeshTools2D(MeshToolsAPI):
 		
 		for xList in reversed(mesh):
 			printStr = ""
-			for x in xList:
+			for point in xList:
 				if len(printStr) > 0:
 					printStr = printStr + "\t"
-				if indexToPrint:
-					printStr = printStr + str(x[indexToPrint])
-				else:
-					printStr = printStr + str(x)
+				if indexesToPrint:
+					point = self.restructureVals(point, indexesToPrint)
+				printStr = printStr + str(point)
 			print printStr + "\n"
 	
 	def writeMesh(self, mesh, fileName):
