@@ -107,6 +107,9 @@ class PieceNameGenerator:
 		return fileName
 	
 	def calcIndexes(self, indexes, widths):
+		"""
+		1*X + xWidth * Y + (xWidth * yWidth) * Z
+		"""
 		val = 0
 		prevWidth = 1
 	
