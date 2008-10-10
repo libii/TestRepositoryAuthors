@@ -171,6 +171,8 @@ class MeshPartitioner:
 			for index in indices:
 				printStr = printStr + " " + str(index)
 			
+			printStr += "=>" + str(self.nameGen.calcIndexes(indices, self.pieceWidths))
+			
 			printStr = printStr + " Start:"
 			
 			for coord in startCoords:
