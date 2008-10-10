@@ -12,12 +12,15 @@ parser.add_option("-c", "--conf", dest="conf_file", default=confLoader.DEFAULT_C
 			  help="Configuration File (default = %default)")
 parser.add_option("-e", "--endian", dest="endianness", default="", type="string",
 			  help="Endianness of file to print. 'l' for little, 'b' for big, or 'n' for native. Default is loaded from configuration file.")
+parser.add_option("-p", "--partition", dest="partition", action="store_true", default=False,
+			  help="Assume that the mesh to be printed is a partition, and use partition dimensions.")
 parser.add_option("-v", "--vals-per-point", dest="vals_per_point", default="", type="string",
 			  help="Values per point (default will use configuration file value")
 
 progName = sys.argv[0]
 usage = progName + ""
 usage = progName + " MESH_FILE DIM1 DIM2 [DIM3]"
+usage = progName + "-p MESH_PARTITION_FILE"
 
 parser.set_usage(usage)
 
@@ -36,6 +39,12 @@ dims = []
 if len(args) == 0:
 	dims = conf.getInputMeshDimensions()
 	meshFile = conf.getInputMesh()
+elif len(args) == 1 and options.partition:
+	mainDims = conf.getInputMeshDimensions()
+	parts = conf.getPartitions()
+	for i in range(0, len(mainDims)):
+		dims.append(int(mainDims[i] / parts[i]))
+	meshFile = args[0]
 else:
 	meshFile = args[0]
 	for i in range(1, len(args)):
