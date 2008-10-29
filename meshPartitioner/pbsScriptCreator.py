@@ -16,6 +16,8 @@ parser.add_option("-c", "--conf", dest="conf_file", default=confLoader.DEFAULT_C
 			  help="Configuration File (default = %default)")
 parser.add_option("-d", "--output-dir", dest="output_dir", default=".", type="string",
 			  help="Output Dir (default = %default)")
+parser.add_option("-z", "--fast-zyx", dest="fast_zyx", action="store_true", default=False,
+			  help="Mesh is fast Z-Y-X, partition accordingly (default is fast X-Y-Z)")
 
 progName = sys.argv[0]
 usage = progName + ""
@@ -83,7 +85,7 @@ if numJobs > numPieces:
 	print "ERROR: There are more jobs than pieces! (" + str(numJobs) + " jobs, " + str(numPieces) + " pieces)"
 	sys.exit(1)
 
-def writeFile(count, digits, confFile, outputDir, startIndex, endIndex):
+def writeFile(count, digits, confFile, outputDir, startIndex, endIndex, zyx=False):
 	name = outputDir + "partition_" + padNum(count, digits)
 	fp = open(name + ".qsub", "w")
 	fp.write("#!/bin/bash" + "\n")
@@ -92,7 +94,10 @@ def writeFile(count, digits, confFile, outputDir, startIndex, endIndex):
 	fp.write("#PBS -o " + name + ".out" + "\n")
 	fp.write("#PBS -e " + name + ".err" + "\n")
 	fp.write("\n")
-	partCommand = path + "partition.py -c " + confFile + " -a " + str(startIndex) + " " + str(endIndex)
+	zyxStr = ""
+	if zyx:
+		zyxStr = "--fast-zyx "
+	partCommand = path + "partition.py " + zyxStr + "-c " + confFile + " -a " + str(startIndex) + " " + str(endIndex)
 	print partCommand
 	fp.write(partCommand + "\n")
 	fp.close()
@@ -103,4 +108,4 @@ for i in range(0, numJobs):
 	startIndex = i * piecesPerJob
 	endIndex = startIndex + piecesPerJob - 1
 	
-	writeFile(i, digits, conf.getConfFileName(), outputDir, startIndex, endIndex)
+	writeFile(i, digits, conf.getConfFileName(), outputDir, startIndex, endIndex, zyx=options.fast_zyx)

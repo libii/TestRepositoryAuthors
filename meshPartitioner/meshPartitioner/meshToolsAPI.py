@@ -47,7 +47,7 @@ class MeshToolsAPI:
 	def loadMesh(self, meshFile, dimensions):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
-	def printMesh(self, mesh, indexesToPrint=None, warn=True):
+	def printMesh(self, mesh, indexesToPrint=None, warn=True, list=False):
 		raise MeshException("ERROR: Mesh function not implemented!")
 	
 	def writeMesh(self, mesh, fileName):

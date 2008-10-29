@@ -14,6 +14,8 @@ parser.add_option("-a", "--absolute-indexes", dest="abs_indexes", action="store_
 			  "Default uses  dimension indexes. See examples")
 parser.add_option("-c", "--conf", dest="conf_file", default=confLoader.DEFAULT_CONF_FILE_NAME, type="string",
 			  help="Configuration File (default = %default)")
+parser.add_option("-z", "--fast-zyx", dest="fast_zyx", action="store_true", default=False,
+			  help="Mesh is fast Z-Y-X, partition accordingly (default is fast X-Y-Z)")
 
 progName = sys.argv[0]
 usage = progName + "a [START_INDEX [END_INDEX]]\n\n"
@@ -95,4 +97,4 @@ else:
 			parser.print_usage()
 			sys.exit(1)
 
-partitioner.partition(absStart, absEnd, startIndexes, endIndexes)
+partitioner.partition(absStart, absEnd, startIndexes, endIndexes, zyx=options.fast_zyx)

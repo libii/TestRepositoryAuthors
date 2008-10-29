@@ -93,7 +93,7 @@ class MeshTools2D(MeshToolsAPI):
 		
 		return mesh
 	
-	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None):
+	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None, zyx=False):
 		"""
 		
 		"""
