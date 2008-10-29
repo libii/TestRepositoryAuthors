@@ -63,7 +63,7 @@ class MeshPartitioner:
 		
 		self.nameGen = PieceNameGenerator(baseFileName, fileNamePattern, self.dimensions, self.pieces, self.pieceWidths)
 	
-	def partition(self, absStart=None, absEnd=None, startIndices=None, endIndices=None):
+	def partition(self, absStart=None, absEnd=None, startIndices=None, endIndices=None, zyx=False):
 		verbose=True
 		
 		if startIndices:
@@ -134,7 +134,7 @@ class MeshPartitioner:
 						startCoords.append(coord1)
 						startCoords.append(coord2)
 						startCoords.append(coord3)
-						self._extract(indices, startCoords, digits, verbose)
+						self._extract(indices, startCoords, digits, verbose, zyx=zyx)
 						count += 1
 				else:
 					
@@ -153,7 +153,7 @@ class MeshPartitioner:
 					self._extract(indices, startCoords, digits, verbose)
 					count += 1
 	
-	def _extract(self, indices, startCoords, digits, verbose=False):
+	def _extract(self, indices, startCoords, digits, verbose=False, zyx=False):
 		
 		pieceFile = self.outputDir + self.nameGen.getFileName(indices)
 		
@@ -186,7 +186,7 @@ class MeshPartitioner:
 			print "Writing piece " + pieceFile + " " + printStr
 		
 		piece = self.meshTools.extractMeshPeiceFromFile(self.inputMesh, self.dimensions,\
-															startCoords, self.pieceWidths, outFile=pieceFile)
+															startCoords, self.pieceWidths, outFile=pieceFile, zyx=zyx)
 	
 	def is3D(self):
 		if self.numDimensions == 3:

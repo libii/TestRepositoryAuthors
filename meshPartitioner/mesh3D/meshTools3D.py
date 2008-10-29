@@ -111,10 +111,84 @@ class MeshTools3D(MeshToolsAPI):
 		
 		return mesh
 	
-	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None):
+	def extractMeshPeiceFromFileZYX(self, meshFile, dimensions, startCoords, widths, outFile=None):
+		print "ZYX PARTITION!!!"
+		origWidthX = dimensions[0]
+		origWidthY = dimensions[1]
+		origWidthZ = dimensions[2]
+		
+		startX = startCoords[0]
+		startY = startCoords[1]
+		startZ = startCoords[2]
+
+		pieceWidthX = widths[0]
+		pieceWidthY = widths[1]
+		pieceWidthZ = widths[2]
+		
+		# the number of bytes within each small line until the first value
+		smallLineOffset = startZ * self.bytesPerPoint
+		
+		bytesPerSmallLine = origWidthZ * self.bytesPerPoint
+		bytesPerMediumLine = origWidthY * bytesPerSmallLine
+		
+		if outFile == None:
+			mesh = []
+			for z in range(pieceWidthZ):
+				yList = []
+				for y in range(pieceWidthY):
+					xList = []
+					for x in range(pieceWidthX):
+						xList.append(None)
+					yList.append(xList)
+				mesh.append(yList)
+		else:
+			out = open(outFile, "wb")
+		
+		file = open(meshFile, "rb")
+
+		for x in range(startX, startX + pieceWidthX):
+			for y in range(startY, startY + pieceWidthY):
+				# calculate the index of the start of this line
+				index = bytesPerSmallLine * x + (bytesPerMediumLine * y) + smallLineOffset
+				
+				print "INDEX: " + str(index)
+				
+				file.seek(index)
+				
+				for z in range(pieceWidthZ):
+					binData = file.read(self.bytesPerPoint)
+					print "Read in: " + binData
+					if outFile and self.valsToInclude == None and self.inputEndianness == self.outputEndianness:
+						# we get to just copy the data
+						print "easy copy!"
+						out.write(binData)
+					else:
+						# we're restructuring or converting the data
+						point = struct.unpack(self.inUnpackStr, binData)
+						if self.valsPerPoint == 1:
+							point = point[0]
+						else:
+							point = self.restructureVals(point)
+						if outFile:
+							binData = self.packList(self.outputEndianness + self.type, point)
+							print "Writing: " + binData
+							out.write(binData)
+						else:
+							mesh[z][y][x] = point
+		
+		file.close()
+		
+		if outFile != None:
+			out.close()
+			return
+		return mesh
+	
+	def extractMeshPeiceFromFile(self, meshFile, dimensions, startCoords, widths, outFile=None, zyx=False):
 		"""
 		
 		"""
+		if zyx:
+			return self.extractMeshPeiceFromFileZYX(meshFile, dimensions, startCoords, widths, outFile)
 		origWidthX = dimensions[0]
 		origWidthY = dimensions[1]
 		origWidthZ = dimensions[2]
