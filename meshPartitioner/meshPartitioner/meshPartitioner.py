@@ -155,7 +155,7 @@ class MeshPartitioner:
 	
 	def _extract(self, indices, startCoords, digits, verbose=False, zyx=False):
 		
-		pieceFile = self.outputDir + self.nameGen.getFileName(indices)
+		pieceFile = self.outputDir + self.nameGen.getFileName(indices, zyx)
 		
 		#if yifengFileNames:
 		#	pieceFile = self.outputDir + baseFileName.rstrip(".bin")

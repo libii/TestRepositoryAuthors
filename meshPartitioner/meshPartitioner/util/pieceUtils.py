@@ -25,6 +25,7 @@ PATTERN_Y_PIECE_INDEX = "%Y"
 PATTERN_Z_PIECE_INDEX = "%Z"
 PATTERN_INDEX = "%i"
 PATTERN_PIECE_INDEX = "%I"
+PATTERN_MPI_RANK_INDEX = "%R"
 PATTERN_ORIGINAL_NAME = "%n"
 
 class PieceNameGenerator:
@@ -45,6 +46,7 @@ class PieceNameGenerator:
 		
 		self.realNum, self.realNumStr = self.getNumFlag(PATTERN_INDEX, self.pattern)
 		self.pieceNum, self.pieceNumStr = self.getNumFlag(PATTERN_PIECE_INDEX, self.pattern)
+		self.mpiNum, self.mpiNumStr = self.getNumFlag(PATTERN_MPI_RANK_INDEX, self.pattern)
 		
 		self.hasReal = self.hasRealX or self.hasRealY or self.hasRealZ or (self.realNum >= 0)
 		
@@ -72,7 +74,7 @@ class PieceNameGenerator:
 			maxIndex.append(index - 1)
 		self.realIndexDigits = len(str(self.calcIndexes(maxIndex, dimensions)))
 	
-	def getFileName(self, indexes):
+	def getFileName(self, indexes, zyx=False):
 		fileName = self.pattern
 		
 		fileName = fileName.replace(PATTERN_X_PIECE_INDEX, self.padNum(indexes[0], self.indIndexDigits))
@@ -97,15 +99,23 @@ class PieceNameGenerator:
 			fileName = fileName.replace(PATTERN_Z_INDEX, self.padNum(realZ, self.realIndIndexDigits))
 		
 		if self.pieceNum >= 0:
-			index = self.calcIndexes(indexes, self.pieces)
+			index = self.calcIndexes(indexes, self.pieces, zyx=zyx)
 			if self.pieceNum == 0:
 				num = self.pieceIndexDigits
 			else:
 				num = self.pieceNum
 			fileName = fileName.replace(self.pieceNumStr, self.padNum(index, num))
 		
+		if self.mpiNum >= 0:
+			index = self.calcIndexes(indexes, self.pieces, zyx=True)
+			if self.mpiNum == 0:
+				num = self.pieceIndexDigits
+			else:
+				num = self.mpiNum
+			fileName = fileName.replace(self.mpiNumStr, self.padNum(index, num))
+		
 		if self.realNum >= 0:
-			index = self.calcIndexes(realIndexes, self.dims)
+			index = self.calcIndexes(realIndexes, self.dims, zyx=zyx)
 			if self.realNum == 0:
 				num = self.realIndexDigits
 			else:
