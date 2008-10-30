@@ -112,7 +112,6 @@ class MeshTools3D(MeshToolsAPI):
 		return mesh
 	
 	def extractMeshPeiceFromFileZYX(self, meshFile, dimensions, startCoords, widths, outFile=None):
-		print "ZYX PARTITION!!!"
 		origWidthX = dimensions[0]
 		origWidthY = dimensions[1]
 		origWidthZ = dimensions[2]
@@ -151,16 +150,12 @@ class MeshTools3D(MeshToolsAPI):
 				# calculate the index of the start of this line
 				index = bytesPerSmallLine * x + (bytesPerMediumLine * y) + smallLineOffset
 				
-				print "INDEX: " + str(index)
-				
 				file.seek(index)
 				
 				for z in range(pieceWidthZ):
 					binData = file.read(self.bytesPerPoint)
-					print "Read in: " + binData
 					if outFile and self.valsToInclude == None and self.inputEndianness == self.outputEndianness:
 						# we get to just copy the data
-						print "easy copy!"
 						out.write(binData)
 					else:
 						# we're restructuring or converting the data
@@ -171,7 +166,6 @@ class MeshTools3D(MeshToolsAPI):
 							point = self.restructureVals(point)
 						if outFile:
 							binData = self.packList(self.outputEndianness + self.type, point)
-							print "Writing: " + binData
 							out.write(binData)
 						else:
 							mesh[z][y][x] = point

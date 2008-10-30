@@ -43,10 +43,10 @@ class PieceNameGenerator:
 		self.hasRealY = self.pattern.find(PATTERN_Y_INDEX) >= 0
 		self.hasRealZ = self.pattern.find(PATTERN_Z_INDEX) >= 0
 		
-		self.hasRealIndex = self.pattern.find(PATTERN_INDEX) >= 0
-		self.hasPieceIndex = self.pattern.find(PATTERN_PIECE_INDEX) >= 0
+		self.realNum, self.realNumStr = self.getNumFlag(PATTERN_INDEX, self.pattern)
+		self.pieceNum, self.pieceNumStr = self.getNumFlag(PATTERN_PIECE_INDEX, self.pattern)
 		
-		self.hasReal = self.hasRealX or self.hasRealY or self.hasRealZ or self.hasRealIndex
+		self.hasReal = self.hasRealX or self.hasRealY or self.hasRealZ or (self.realNum >= 0)
 		
 		self.indIndexDigits = 0
 		for i in range(len(pieces)):
@@ -96,15 +96,51 @@ class PieceNameGenerator:
 		if self.hasRealX:
 			fileName = fileName.replace(PATTERN_Z_INDEX, self.padNum(realZ, self.realIndIndexDigits))
 		
-		if self.hasPieceIndex:
+		if self.pieceNum >= 0:
 			index = self.calcIndexes(indexes, self.pieces)
-			fileName = fileName.replace(PATTERN_PIECE_INDEX, self.padNum(index, self.pieceIndexDigits))
+			if self.pieceNum == 0:
+				num = self.pieceIndexDigits
+			else:
+				num = self.pieceNum
+			fileName = fileName.replace(self.pieceNumStr, self.padNum(index, num))
 		
-		if self.hasRealIndex:
+		if self.realNum >= 0:
 			index = self.calcIndexes(realIndexes, self.dims)
-			fileName = fileName.replace(PATTERN_INDEX, self.padNum(index, self.realIndexDigits))
+			if self.realNum == 0:
+				num = self.realIndexDigits
+			else:
+				num = self.realNum
+			fileName = fileName.replace(self.realNumStr, self.padNum(index, num))
 		
 		return fileName
+	
+	def getNumFlag(self, flag, name):
+		flagChar = flag[len(flag)-1]
+		#print "FLAG CHAR: " + flagChar
+		
+		numStr = "0"
+		
+		i = name.find("%")
+		while i >= 0:
+			name = name[i:]
+			
+			if name[1] == flagChar:
+				#print "returning: 0 " + name[0:1]
+				return 0, name[0:2]
+			
+			if name[2] == flagChar:
+				try:
+					num = int(name[1])
+					#print "returning: " + str(num) + " " + name[0:2]
+					return num, name[0:3]
+				except:
+					name = name[2:]
+					i = name.find("%")
+					continue
+			name = name[2:]
+			i = name.find("%")
+		
+		return -1, flag
 	
 	def calcIndexes(self, indexes, widths, zyx=False):
 		"""
@@ -133,3 +169,13 @@ class PieceNameGenerator:
 			numStr = "0" + numStr
 		
 		return numStr
+
+if __name__ == "__main__":
+	dimensions = (4, 4, 4)
+	pieces = (2, 2, 2)
+	pieceWidths = (2, 2, 2)
+	
+	pattern = "media%I.bin"
+	#pattern = "media%X_%Y_%Z.bin"
+	gen = PieceNameGenerator("", pattern, dimensions, pieces, pieceWidths)
+	print gen.getFileName((2, 1, 0))
